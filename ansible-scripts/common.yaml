@@ -2,12 +2,7 @@
 - name: Initial Setup
   hosts: all
   remote_user: root
-
   tasks:
-
-  - name: Turn off interface with Private IP
-    raw: ip link set dev eth1 down
-
   - name: Update all packages for Debian-like Systems
     apt:
       update_cache: yes
@@ -22,10 +17,28 @@
       url: https://download.docker.com/linux/ubuntu/gpg
       state: present
 
+  - name: Add Kubeadm GPG apt key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+  
+  - name: Add Kubeadm Repository
+    apt_repository:
+      url: https://apt.kubernetes.io/ kubernetes-xenial main
+
   - name: Add Docker Repository
     apt_repository:
       repo: deb https://download.docker.com/linux/ubuntu bionic stable
       state: present
+
+  - name: Update all packages for Debian-like Systems
+    apt:
+      update_cache: yes
+      name: '*'
+      force_apt_get: yes
+      state: latest
+    when: ansible_facts['os_family'] == 'Debian'
+    notify: Autoremove Packages using APT
 
   - name: Update apt and install docker-ce
     apt: update_cache=yes name=containerd.io state=latest
