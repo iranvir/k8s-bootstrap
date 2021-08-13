@@ -1,0 +1,37 @@
+---
+- name: Initial Setup
+  hosts: all
+  remote_user: root
+
+  tasks:
+
+  - name: Turn off interface with Private IP
+    raw: ip link set dev eth1 down
+
+  - name: Update all packages for Debian-like Systems
+    apt:
+      update_cache: yes
+      name: '*'
+      force_apt_get: yes
+      state: latest
+    when: ansible_facts['os_family'] == 'Debian'
+    notify: Autoremove Packages using APT
+  
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Update apt and install docker-ce
+    apt: update_cache=yes name=containerd.io state=latest
+
+  handlers:
+  - name: Autoremove Packages using APT
+    apt:
+      autoremove: yes
+      purge: yes
