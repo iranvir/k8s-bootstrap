@@ -1,0 +1,30 @@
+---
+- name: Doctl Cleanup
+  hosts: all
+  remote_user: root
+  tasks:
+
+  - name: Remove Cloud-Init
+    ansible.builtin.package:
+      name: cloud-init
+      state: absent
+    when: ansible_facts['os_family'] == 'Debian'
+    notify: Autoremove Packages using APT
+
+  - name: Remove Cloud-init directories
+    ansible.builtin.file:
+      name: "{{ item }}"
+      state: absent
+    loop:
+      - /var/lib/cloud
+      - /etc/cloud
+      - /usr/lib/python3/dist-packages/cloudinit/sources/helpers
+
+  - name: Generate Default Containerd Config
+    raw: sed -i '/post-up ifup eth0:1/,$d' /etc/network/interfaces
+
+  handlers:
+  - name: Autoremove Packages using APT
+    ansible.builtin.apt:
+      autoremove: yes
+      purge: yes

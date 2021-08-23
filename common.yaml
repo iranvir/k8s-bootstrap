@@ -25,25 +25,21 @@
       - net.ipv4.ip_forward = 1
       - net.bridge.bridge-nf-call-ip6tables = 1
 
-  - name: Add Docker GPG apt Key
+  - name: Add Kubernetes and Docker GPG apt keys
     ansible.builtin.apt_key:
-      url: https://download.docker.com/linux/debian/gpg
+      url: "{{ item }}"
       state: present
-
-  - name: Add Kubeadm GPG apt key
-    ansible.builtin.apt_key:
-      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-      state: present
+    loop:
+      - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      - https://download.docker.com/linux/debian/gpg
   
   - name: Add Kubeadm Repository
     ansible.builtin.apt_repository:
-      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      repo: "{{ item }}"
       state: present
-
-  - name: Add Docker Repository
-    ansible.builtin.apt_repository:
-      repo: deb https://download.docker.com/linux/debian buster stable
-      state: present
+    loop:
+        - deb https://apt.kubernetes.io/ kubernetes-xenial main
+        - deb https://download.docker.com/linux/debian buster stable
 
   - name: Update all packages for Debian-like Systems
     ansible.builtin.apt:
@@ -58,6 +54,7 @@
     ansible.builtin.package:
       name:
         - curl
+        - ifupdown
         - ca-certificates
         - apt-transport-https
         - gnupg
@@ -69,7 +66,7 @@
       state: latest
 
   - name: Generate Default Containerd Config
-    ansible.builtin.raw: containerd config default | sudo tee /etc/containerd/config.toml
+    raw: containerd config default | sudo tee /etc/containerd/config.toml
 
   - name: Add Systemd as the cgroup driver for containerd
     ansible.builtin.lineinfile:
