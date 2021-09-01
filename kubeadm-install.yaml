@@ -1,5 +1,5 @@
 ---
-- name: Initial Setup
+- name: Kubeadm and Containerd Setup
   hosts: all
   remote_user: root
   tasks:
