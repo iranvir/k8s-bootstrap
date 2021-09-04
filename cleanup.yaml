@@ -20,8 +20,11 @@
       - /etc/cloud
       - /usr/lib/python3/dist-packages/cloudinit/sources/helpers
 
-  - name: Generate Default Containerd Config
-    raw: sed -i '/post-up ifup eth0:1/,$d' /etc/network/interfaces
+  - name: Editing /etc/network/interfaces to remove Private IPs
+    ansible.builtin.raw: sed -i '/post-up ifup eth0:1/,$d' /etc/network/interfaces
+
+  - name: Unconditionally reboot the machine with all defaults
+    ansible.builtin.reboot:
 
   handlers:
   - name: Autoremove Packages using APT
