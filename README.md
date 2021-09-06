@@ -8,7 +8,7 @@ created/deleted by these shell scripts are in the file `hosts`. Ansible also use
 The create/delete scripts also adds/removes the VMs' IP addresses and hostname
 to/from your `/etc/hosts` so you can SSH into VMs using just the name mentioned in the `hosts` file, e.g, `ssh root@control-00` without fishing for Public IP addresses.
 
-> P.s If you want to follow along but don't have a DigitalOcean Account, consider signing up using [this referral link](https://m.do.co/c/35defe80a576). It gets you $100 worth of credits with them and also helps me out.
+> P.S If you want to follow along but don't have a DigitalOcean Account, consider signing up using [this referral link](https://m.do.co/c/35defe80a576). It gets you $100 worth of credits with them and also helps me out.
 
 The `kubeadm-install.yaml` does all the configuration necessary for Kubernetes
 to work. Including installing Kubernetes' packages, configuring boot parameters,
