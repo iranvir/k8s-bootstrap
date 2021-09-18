@@ -75,6 +75,29 @@
       insertafter: '          \[plugins.\"io.containerd.grpc.v1.cri\".containerd.runtimes.runc.options\]'
       line: '            SystemdCgroup = true'
 
+## DigitalOcean specific cleanup tasks
+  - name: Remove Cloud-Init
+    ansible.builtin.package:
+      name: cloud-init
+      state: absent
+    when: ansible_facts['os_family'] == 'Debian'
+    notify: Autoremove Packages using APT
+
+  - name: Remove Cloud-init directories
+    ansible.builtin.file:
+      name: "{{ item }}"
+      state: absent
+    loop:
+      - /var/lib/cloud
+      - /etc/cloud
+      - /usr/lib/python3/dist-packages/cloudinit/sources/helpers
+
+  - name: Editing /etc/network/interfaces to remove Private IPs
+    ansible.builtin.raw: sed -i '/post-up ifup eth0:1/,$d' /etc/network/interfaces
+
+  - name: Unconditionally reboot the machine with all defaults
+    ansible.builtin.reboot:
+
   handlers:
   - name: Autoremove Packages using APT
     ansible.builtin.apt:
