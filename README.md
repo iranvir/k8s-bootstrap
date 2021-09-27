@@ -28,8 +28,11 @@ without having to SSH into the control node.
 After this you will need to [install a Pod Networking
 solution](https://kubernetes.io/docs/concepts/cluster-administration/networking/).
 
-P.S: Since I use Flannel for Pod Networking I run `kubeadm init
---pod-network-cidr 10.244.0.0/16` because Kubeadm's default cidr doesn't work
-with Flannel.
+P.S: Since I use Flannel for Pod Networking I run:
+`kubeadm init --pod-network-cidr 10.244.0.0/16 --ignore-preflight-errors=NumCPU,Mem`
+Followed by:
+`kubectl create -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`
+ 
+Because Kubeadm's default cidr doesn't work with Flannel and I use just 1vCPU and 1GB of memory for my test bench.
 
 Once everything is done, run `kubectl get nodes` and `kubectl get pods --all-namespaces` to see if you cluster is healthy and up and running.
